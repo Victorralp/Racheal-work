@@ -1,0 +1,26 @@
+{
+  "all": {
+    "revenue": "$1,245,800",
+    "orders": "3,842",
+    "avgOrder": "$324.18",
+    "trend": "+12.5%"
+  },
+  "north": {
+    "revenue": "$420,100",
+    "orders": "1,203",
+    "avgOrder": "$349.21",
+    "trend": "+8.2%"
+  },
+  "south": {
+    "revenue": "$385,200",
+    "orders": "1,089",
+    "avgOrder": "$353.72",
+    "trend": "+18.4%"
+  },
+  "west": {
+    "revenue": "$440,500",
+    "orders": "1,550",
+    "avgOrder": "$284.19",
+    "trend": "-3.1%"
+  }
+}

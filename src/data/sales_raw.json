@@ -1,0 +1,30 @@
+[
+  {
+    "invoice": "INV-001",
+    "date": "2024/01/15",
+    "sku": "laptop-pro",
+    "store": "North Branch",
+    "amount": "$1299.99"
+  },
+  {
+    "invoice": "INV-001",
+    "date": "01-15-2024",
+    "sku": "LAPTOP-PRO",
+    "store": "north",
+    "amount": "1299.99"
+  },
+  {
+    "invoice": "INV-002",
+    "date": "2024/01/16",
+    "sku": "mouse_wireless",
+    "store": "",
+    "amount": "$29.99"
+  },
+  {
+    "invoice": "INV-003",
+    "date": "Jan 17 2024",
+    "sku": "keyboard",
+    "store": "West Branch",
+    "amount": "$79"
+  }
+]
