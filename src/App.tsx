@@ -13,7 +13,13 @@ import Login from "./pages/admin/Login";
 import AdminProjects from "./pages/admin/Projects";
 import NewProject from "./pages/admin/NewProject";
 import EditProject from "./pages/admin/EditProject";
+import AdminDemoProjects from "./pages/admin/DemoProjects";
+import NewDemoProject from "./pages/admin/NewDemoProject";
+import EditDemoProject from "./pages/admin/EditDemoProject";
+import AdminProfile from "./pages/admin/Profile";
+import AdminHomeSettings from "./pages/admin/HomeSettings";
 import NotFound from "./pages/NotFound";
+import AdminShortcutListener from "./components/AdminShortcutListener";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +30,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <AdminShortcutListener />
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
@@ -37,6 +44,11 @@ const App = () => (
             <Route path="/admin/projects" element={<AdminProjects />} />
             <Route path="/admin/projects/new" element={<NewProject />} />
             <Route path="/admin/projects/:id/edit" element={<EditProject />} />
+            <Route path="/admin/demo-projects" element={<AdminDemoProjects />} />
+            <Route path="/admin/demo-projects/new" element={<NewDemoProject />} />
+            <Route path="/admin/demo-projects/:id/edit" element={<EditDemoProject />} />
+            <Route path="/admin/home" element={<AdminHomeSettings />} />
+            <Route path="/admin/profile" element={<AdminProfile />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

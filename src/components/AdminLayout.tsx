@@ -7,8 +7,10 @@ import {
   LogOut,
   Globe,
   Briefcase,
-  Settings,
   ShieldCheck,
+  UserRound,
+  BarChart3,
+  Home as HomeIcon,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -35,10 +37,19 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         icon: Briefcase,
       },
       {
-        label: 'Settings',
-        to: '/admin/settings',
-        icon: Settings,
-        comingSoon: true,
+        label: 'Interactive Demo',
+        to: '/admin/demo-projects',
+        icon: BarChart3,
+      },
+      {
+        label: 'Homepage',
+        to: '/admin/home',
+        icon: HomeIcon,
+      },
+      {
+        label: 'Profile',
+        to: '/admin/profile',
+        icon: UserRound,
       },
     ],
     []

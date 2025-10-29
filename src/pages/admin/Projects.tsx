@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AdminGuard } from '@/components/AdminGuard';
 import { AdminLayout } from '@/components/AdminLayout';
@@ -9,12 +9,13 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Search, BarChart3, Sparkles, Layers } from 'lucide-react';
 import { Project } from '@/data/mockProjects';
 
 type AdminProject = Project & {
-  createdAt?: any;
-  updatedAt?: any;
+  createdAt?: Timestamp | Date | null;
+  updatedAt?: Timestamp | Date | null;
 };
 
 const AdminProjects = () => {
@@ -22,6 +23,7 @@ const AdminProjects = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [toolFilter, setToolFilter] = useState<string>('all');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -85,6 +87,83 @@ const AdminProjects = () => {
     }
   };
 
+  const publishedCount = useMemo(
+    () => projects.filter((project) => project.published).length,
+    [projects]
+  );
+
+  const draftCount = useMemo(
+    () => projects.filter((project) => !project.published).length,
+    [projects]
+  );
+
+  const toolOptions = useMemo(() => {
+    const tools = new Set<string>();
+    projects.forEach((project) => {
+      project.tools.forEach((tool) => tools.add(tool));
+    });
+    return Array.from(tools).sort((a, b) => a.localeCompare(b));
+  }, [projects]);
+
+  const liveShare = useMemo(() => {
+    if (!projects.length) return 0;
+    return Math.round((publishedCount / projects.length) * 100);
+  }, [projects.length, publishedCount]);
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter((project) => {
+      const matchesStatus =
+        statusFilter === 'all'
+          ? true
+          : statusFilter === 'published'
+          ? project.published
+          : !project.published;
+
+      const matchesTool =
+        toolFilter === 'all'
+          ? true
+          : project.tools.includes(toolFilter);
+
+      const matchesSearch = `${project.title} ${project.summary}`
+        .toLowerCase()
+        .includes(search.toLowerCase().trim());
+
+      return matchesStatus && matchesTool && matchesSearch;
+    });
+  }, [projects, statusFilter, toolFilter, search]);
+
+  const formatDate = (
+    timestamp?: Timestamp | Date | { toDate?: () => Date } | null
+  ) => {
+    if (!timestamp) return '-';
+
+    const toDate = () => {
+      if (timestamp instanceof Timestamp) {
+        return timestamp.toDate();
+      }
+      if (timestamp instanceof Date) {
+        return timestamp;
+      }
+      if (
+        typeof timestamp === 'object' &&
+        timestamp !== null &&
+        typeof timestamp.toDate === 'function'
+      ) {
+        return timestamp.toDate();
+      }
+      return null;
+    };
+
+    const date = toDate();
+    if (!date) return '-';
+
+    return date.toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
   if (loading) {
     return (
       <AdminGuard>
@@ -96,47 +175,6 @@ const AdminProjects = () => {
       </AdminGuard>
     );
   }
-
-  const publishedCount = useMemo(
-    () => projects.filter((project) => project.published).length,
-    [projects]
-  );
-
-  const draftCount = useMemo(
-    () => projects.filter((project) => !project.published).length,
-    [projects]
-  );
-
-  const filteredProjects = useMemo(() => {
-    return projects.filter((project) => {
-      const matchesStatus =
-        statusFilter === 'all'
-          ? true
-          : statusFilter === 'published'
-          ? project.published
-          : !project.published;
-
-      const matchesSearch = `${project.title} ${project.summary}`
-        .toLowerCase()
-        .includes(search.toLowerCase().trim());
-
-      return matchesStatus && matchesSearch;
-    });
-  }, [projects, statusFilter, search]);
-
-  const formatDate = (timestamp?: any) => {
-    if (!timestamp) return '—';
-    try {
-      const date = typeof timestamp.toDate === 'function' ? timestamp.toDate() : new Date(timestamp);
-      return date.toLocaleDateString(undefined, {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      });
-    } catch (error) {
-      return '—';
-    }
-  };
 
   return (
     <AdminGuard>
@@ -198,15 +236,18 @@ const AdminProjects = () => {
             <Card className="p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Drafts</p>
-                  <p className="text-2xl font-semibold mt-2">{draftCount}</p>
+                  <p className="text-sm text-muted-foreground">Live coverage</p>
+                  <p className="text-2xl font-semibold mt-2">{liveShare}%</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Draft queue: {draftCount} awaiting polish.
+                  </p>
                 </div>
                 <div className="rounded-full bg-amber-100 p-3 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400">
                   <Sparkles className="w-5 h-5" />
                 </div>
               </div>
               <p className="mt-4 text-xs text-muted-foreground">
-                Finalize these to unlock more social proof.
+                Aim for 100% to keep momentum with prospects.
               </p>
             </Card>
           </div>
@@ -243,6 +284,48 @@ const AdminProjects = () => {
               </div>
             </div>
           </Card>
+
+          {toolOptions.length ? (
+            <Card className="p-4 border border-border/60 bg-muted/10">
+              <div className="flex items-center gap-2 mb-3">
+                <Layers className="w-4 h-4 text-muted-foreground" />
+                <p className="text-sm font-medium">Filter by tool</p>
+              </div>
+              <ScrollArea className="w-full">
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setToolFilter('all')}
+                    className={`rounded-full border px-3 py-1 text-xs uppercase tracking-wide transition-colors ${
+                      toolFilter === 'all'
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border text-muted-foreground hover:bg-muted'
+                    }`}
+                  >
+                    All tools
+                  </button>
+                  {toolOptions.map((tool) => {
+                    const isActive = toolFilter === tool;
+                    return (
+                      <button
+                        key={tool}
+                        type="button"
+                        onClick={() => setToolFilter(tool)}
+                        className={`rounded-full border px-3 py-1 text-xs uppercase tracking-wide transition-colors ${
+                          isActive
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-border text-muted-foreground hover:bg-muted'
+                        }`}
+                      >
+                        {tool}
+                      </button>
+                    );
+                  })}
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </Card>
+          ) : null}
 
           {projects.length === 0 ? (
             <Card className="p-12 text-center">
@@ -299,6 +382,11 @@ const AdminProjects = () => {
                           </Badge>
                         ))}
                       </div>
+
+                      <p className="text-xs text-emerald-600/80 dark:text-emerald-300/80 border border-emerald-200/70 dark:border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-500/5 rounded-lg px-3 py-2 leading-relaxed">
+                        <span className="font-medium uppercase tracking-wide mr-2 text-[0.65rem]">Impact</span>
+                        <span className="line-clamp-2 text-muted-foreground">{project.impact}</span>
+                      </p>
                     </div>
 
                     <div className="flex shrink-0 gap-2 self-stretch lg:flex-col">

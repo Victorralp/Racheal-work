@@ -15,6 +15,24 @@ service cloud.firestore {
       // Only admins can create, update, or delete projects
       allow create, update, delete: if isAdmin();
     }
+
+    // Interactive demo scenarios
+    match /demoProjects/{demoId} {
+      // Scenarios are public so prospects can explore them
+      allow read: if true;
+
+      // Only admins can manage scenarios
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Site-wide settings such as profile details
+    match /settings/{documentName} {
+      // Allow anyone to read non-sensitive settings
+      allow read: if true;
+
+      // Restrict updates to admins
+      allow create, update, delete: if isAdmin();
+    }
     
     // Deny all other access by default
     match /{document=**} {
