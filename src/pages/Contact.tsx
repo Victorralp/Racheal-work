@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAnimationConfig } from "@/hooks/use-animation-config";
 import { Loader2 } from "lucide-react";
 
 const Contact = () => {
@@ -18,6 +20,9 @@ const Contact = () => {
     problem: "",
     budget: ""
   });
+  
+  // Animation configuration
+  const { shouldAnimate, duration, ease } = useAnimationConfig();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,17 +75,42 @@ const Contact = () => {
       
       <main className="flex-1 container mx-auto px-4 py-20">
         <div className="max-w-2xl mx-auto">
-          <div className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <motion.div 
+            className="mb-12"
+            initial={shouldAnimate ? { opacity: 0, y: 30 } : false}
+            animate={shouldAnimate ? { opacity: 1, y: 0 } : false}
+            transition={{ duration: duration.normal }}
+          >
+            <motion.h1 
+              className="text-4xl md:text-5xl font-bold mb-4"
+              initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+              animate={shouldAnimate ? { opacity: 1, y: 0 } : false}
+              transition={{ duration: duration.normal, delay: 0.1 }}
+            >
               Let's Work Together
-            </h1>
-            <p className="text-xl text-muted-foreground">
+            </motion.h1>
+            <motion.p 
+              className="text-xl text-muted-foreground"
+              initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+              animate={shouldAnimate ? { opacity: 1, y: 0 } : false}
+              transition={{ duration: duration.normal, delay: 0.2 }}
+            >
               Tell me about your data challenge. I respond within 24 hours.
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
+          <motion.form 
+            onSubmit={handleSubmit} 
+            className="space-y-6"
+            initial={shouldAnimate ? { opacity: 0, y: 30 } : false}
+            animate={shouldAnimate ? { opacity: 1, y: 0 } : false}
+            transition={{ duration: duration.normal, delay: 0.3 }}
+          >
+            <motion.div
+              initial={shouldAnimate ? { opacity: 0, x: -20 } : false}
+              animate={shouldAnimate ? { opacity: 1, x: 0 } : false}
+              transition={{ duration: duration.fast, delay: 0.4 }}
+            >
               <Label htmlFor="name">Your Name</Label>
               <Input 
                 id="name"
@@ -90,9 +120,13 @@ const Contact = () => {
                 required
                 className="mt-2"
               />
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div
+              initial={shouldAnimate ? { opacity: 0, x: -20 } : false}
+              animate={shouldAnimate ? { opacity: 1, x: 0 } : false}
+              transition={{ duration: duration.fast, delay: 0.5 }}
+            >
               <Label htmlFor="contact">Email or WhatsApp</Label>
               <Input 
                 id="contact"
@@ -102,9 +136,13 @@ const Contact = () => {
                 required
                 className="mt-2"
               />
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div
+              initial={shouldAnimate ? { opacity: 0, x: -20 } : false}
+              animate={shouldAnimate ? { opacity: 1, x: 0 } : false}
+              transition={{ duration: duration.fast, delay: 0.6 }}
+            >
               <Label htmlFor="problem">What problem are you trying to solve?</Label>
               <Textarea 
                 id="problem"
@@ -114,9 +152,13 @@ const Contact = () => {
                 required
                 className="mt-2 min-h-[120px]"
               />
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div
+              initial={shouldAnimate ? { opacity: 0, x: -20 } : false}
+              animate={shouldAnimate ? { opacity: 1, x: 0 } : false}
+              transition={{ duration: duration.fast, delay: 0.7 }}
+            >
               <Label htmlFor="budget">Budget Range</Label>
               <Select 
                 value={formData.budget}
@@ -132,25 +174,43 @@ const Contact = () => {
                   <SelectItem value="ongoing">Ongoing / Retainer</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </motion.div>
 
-            <Button type="submit" size="lg" className="w-full" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                'Send Message'
-              )}
-            </Button>
-          </form>
+            <motion.div
+              initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+              animate={shouldAnimate ? { opacity: 1, y: 0 } : false}
+              transition={{ duration: duration.normal, delay: 0.8 }}
+            >
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="w-full" 
+                disabled={loading}
+                whileHover={shouldAnimate && !loading ? { scale: 1.02 } : false}
+                whileTap={shouldAnimate && !loading ? { scale: 0.98 } : false}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Send Message'
+                )}
+              </Button>
+            </motion.div>
+          </motion.form>
 
-          <div className="mt-12 p-6 bg-card border border-border rounded-xl">
+          <motion.div 
+            className="mt-12 p-6 bg-card border border-border rounded-xl"
+            initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+            animate={shouldAnimate ? { opacity: 1, y: 0 } : false}
+            transition={{ duration: duration.normal, delay: 0.9 }}
+          >
             <p className="text-sm text-muted-foreground">
               Based remotely. Available for freelance projects and contract work worldwide.
             </p>
-          </div>
+          </motion.div>
         </div>
       </main>
 
