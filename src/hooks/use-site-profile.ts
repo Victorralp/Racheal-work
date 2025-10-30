@@ -14,10 +14,22 @@ const PROFILE_QUERY_KEY = ["site-profile"];
 export interface SiteProfile {
   headshotUrl: string;
   updatedAt?: Timestamp | null;
+  profileShape?: string;
+  profileSize?: string;
+  profilePlacement?: string;
+  profilePositionX?: number;
+  profilePositionY?: number;
+  heroBgUrl?: string;
 }
 
 export interface UpdateSiteProfileInput {
   headshotUrl: string;
+  profileShape?: string;
+  profileSize?: string;
+  profilePlacement?: string;
+  profilePositionX?: number;
+  profilePositionY?: number;
+  heroBgUrl?: string;
 }
 
 const DEFAULT_PROFILE: SiteProfile = {
@@ -26,27 +38,25 @@ const DEFAULT_PROFILE: SiteProfile = {
 
 const fetchSiteProfile = async (): Promise<SiteProfile> => {
   const snapshot = await getDoc(PROFILE_DOC_REF);
-
   if (!snapshot.exists()) {
     return DEFAULT_PROFILE;
   }
-
   const data = snapshot.data();
-
   return {
-    headshotUrl:
-      typeof data.headshotUrl === "string" ? data.headshotUrl : "",
-    updatedAt: "updatedAt" in data ? (data.updatedAt as Timestamp | null) : null,
+    headshotUrl: typeof data.headshotUrl === 'string' ? data.headshotUrl : '',
+    updatedAt: 'updatedAt' in data ? (data.updatedAt as Timestamp | null) : null,
+    heroBgUrl: typeof data.heroBgUrl === 'string' ? data.heroBgUrl : '',
+    profilePositionX: typeof data.profilePositionX === 'number' ? data.profilePositionX : 0,
+    profilePositionY: typeof data.profilePositionY === 'number' ? data.profilePositionY : 0,
+    // Add more fields if you use them
   };
 };
 
-const saveSiteProfile = async ({
-  headshotUrl,
-}: UpdateSiteProfileInput): Promise<void> => {
+const saveSiteProfile = async (profile: UpdateSiteProfileInput): Promise<void> => {
   await setDoc(
     PROFILE_DOC_REF,
     {
-      headshotUrl,
+      ...profile,
       updatedAt: serverTimestamp(),
     },
     { merge: true },

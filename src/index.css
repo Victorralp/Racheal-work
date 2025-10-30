@@ -1,38 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Inter:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 220 13% 5%;
+    --background: 220 15% 3%;
     --foreground: 0 0% 98%;
     
-    --card: 220 13% 8%;
+    --card: 220 15% 6%;
     --card-foreground: 0 0% 98%;
     
-    --popover: 220 13% 8%;
+    --popover: 220 15% 6%;
     --popover-foreground: 0 0% 98%;
     
-    --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 188 100% 50%;
+    --primary-foreground: 220 15% 3%;
     
-    --secondary: 220 13% 15%;
+    --secondary: 220 15% 12%;
     --secondary-foreground: 0 0% 98%;
     
-    --muted: 220 13% 15%;
+    --muted: 220 15% 12%;
     --muted-foreground: 0 0% 60%;
     
-    --accent: 142 76% 36%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 188 100% 50%;
+    --accent-foreground: 220 15% 3%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 220 13% 20%;
-    --input: 220 13% 20%;
-    --ring: 142 76% 36%;
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 188 100% 50%;
     
     --radius: 0.75rem;
+    
+    /* Custom data analyst theme variables */
+    --neon-cyan: 188 100% 50%;
+    --neon-green: 120 100% 50%;
+    --neon-blue: 210 100% 50%;
+    --grid-color: 220 15% 8%;
+    --glow-intensity: 0.3;
   }
 }
 
@@ -43,5 +52,298 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  /* Data Analyst Theme Components */
+  .data-grid {
+    background-image: 
+      linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .neon-glow {
+    box-shadow: 
+      0 0 5px hsl(var(--neon-cyan)),
+      0 0 10px hsl(var(--neon-cyan)),
+      0 0 15px hsl(var(--neon-cyan)),
+      0 0 20px hsl(var(--neon-cyan));
+  }
+  
+  .neon-glow-green {
+    box-shadow: 
+      0 0 5px hsl(var(--neon-green)),
+      0 0 10px hsl(var(--neon-green)),
+      0 0 15px hsl(var(--neon-green)),
+      0 0 20px hsl(var(--neon-green));
+  }
+  
+  .neon-glow-blue {
+    box-shadow: 
+      0 0 5px hsl(var(--neon-blue)),
+      0 0 10px hsl(var(--neon-blue)),
+      0 0 15px hsl(var(--neon-blue)),
+      0 0 20px hsl(var(--neon-blue));
+  }
+  
+  .code-font {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .data-card {
+    @apply bg-card border border-border/60 backdrop-blur-sm;
+    background: linear-gradient(135deg, 
+      hsl(var(--card) / 0.8) 0%, 
+      hsl(var(--card) / 0.4) 100%);
+  }
+  
+  .data-card:hover {
+    @apply border-primary/60;
+    box-shadow: 
+      0 0 20px hsl(var(--primary) / 0.2),
+      0 0 40px hsl(var(--primary) / 0.1);
+  }
+  
+  .analytics-widget {
+    @apply data-card p-6 rounded-xl;
+    background: linear-gradient(135deg, 
+      hsl(var(--card) / 0.9) 0%, 
+      hsl(var(--card) / 0.6) 100%);
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes pulse-glow {
+    from {
+      box-shadow: 0 0 5px hsl(var(--primary) / 0.3);
+    }
+    to {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.6);
+    }
+  }
+  
+  .data-flow {
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      hsl(var(--primary) / 0.3) 50%, 
+      transparent 100%);
+    animation: data-flow 3s ease-in-out infinite;
+  }
+  
+  @keyframes data-flow {
+    0%, 100% {
+      transform: translateX(-100%);
+    }
+    50% {
+      transform: translateX(100%);
+    }
+  }
+  
+  @keyframes data-pulse {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+  
+  @keyframes matrix-rain {
+    0% {
+      transform: translateY(-100vh);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 5px hsl(var(--primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--primary) / 0.4);
+    }
+  }
+  
+  .data-pulse {
+    animation: data-pulse 2s ease-in-out infinite;
+  }
+  
+  .glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  
+  /* Simple CSS animations to replace Framer Motion temporarily */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  
+  .animate-fade-in-left {
+    animation: fadeInLeft 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  
+  .animate-fade-in-scale {
+    animation: fadeInScale 0.8s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  
+  .animate-scale-y {
+    animation: scaleY 0.8s ease-out forwards;
+    transform: scaleY(0);
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInLeft {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes fadeInScale {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes scaleY {
+    to {
+      transform: scaleY(1);
+    }
+  }
+  
+  /* Line chart animations */
+  .line-chart-path {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawLine 2s ease-in-out forwards;
+  }
+  
+  .line-chart-area {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out 1s forwards;
+  }
+  
+  .line-chart-point {
+    transform: scale(0);
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+  
+  /* Donut chart animations */
+  .donut-chart-segment {
+    opacity: 0;
+    transform: scale(0);
+    animation: donutReveal 1s ease-out forwards;
+  }
+  
+  /* Loading animations */
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+  
+  .animate-spin-reverse {
+    animation: spinReverse 2s linear infinite;
+  }
+  
+  .animate-pulse-scale {
+    animation: pulseScale 2s ease-in-out infinite;
+  }
+  
+  .animate-pulse-scale-reverse {
+    animation: pulseScaleReverse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes drawLine {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  
+  @keyframes scaleIn {
+    to {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes donutReveal {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes spinReverse {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+  
+  @keyframes pulseScale {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+  
+  @keyframes pulseScaleReverse {
+    0%, 100% {
+      transform: scale(1.1);
+    }
+    50% {
+      transform: scale(1);
+    }
   }
 }
