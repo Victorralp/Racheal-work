@@ -58,12 +58,35 @@ export const AnalyticsProjectCard = ({
   metrics = [],
   className
 }: AnalyticsProjectCardProps) => {
+  const handleMove: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    const el = e.currentTarget as HTMLDivElement;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5; // -0.5..0.5
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    const ry = px * 10; // rotateY by X movement
+    const rx = -py * 10; // rotateX by Y movement
+    el.style.setProperty('--ry', `${ry}deg`);
+    el.style.setProperty('--rx', `${rx}deg`);
+  };
+  const handleLeave: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    const el = e.currentTarget as HTMLDivElement;
+    el.style.setProperty('--ry', `0deg`);
+    el.style.setProperty('--rx', `0deg`);
+  };
   return (
     <div
-      className={cn('analytics-widget group animate-fade-in-up', className)}
+      className={cn('analytics-widget group animate-fade-in-up tilt-wrap', className)}
       style={{ animationDelay: `${Math.random() * 0.2}s` }}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
     >
-      <Card className="h-full border-border/60 bg-gradient-to-br from-card/90 to-card/60 backdrop-blur-sm overflow-hidden">
+      <Card className="tilt-card h-full border-border/60 bg-gradient-to-br from-card/90 to-card/60 backdrop-blur-sm overflow-hidden relative">
+        {/* Sparkline overlay */}
+        <div className="sparkline">
+          <svg width="120" height="30" viewBox="0 0 120 30">
+            <polyline points="0,20 15,18 30,22 45,12 60,16 75,10 90,14 105,8 120,12" />
+          </svg>
+        </div>
         {/* Header with metrics */}
         <div className="p-6 pb-4">
           <div className="flex items-start justify-between mb-4">

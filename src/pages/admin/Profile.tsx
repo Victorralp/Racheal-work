@@ -232,7 +232,7 @@ const AdminProfile = () => {
                         className="absolute inset-0 rounded-full pointer-events-none"
                         style={{
                           boxShadow: '0 0 48px 8px rgba(0,212,255,0.38)',
-                          animation: 'pulse 2.6s infinite cubic-bezier(.4,0,.6,1)',
+                          animation: 'pulse-glow 2.6s infinite cubic-bezier(.4,0,.6,1)',
                           zIndex: 2,
                           borderRadius: '9999px',
                           border: '2px solid #00d4ff'

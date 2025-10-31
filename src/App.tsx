@@ -20,6 +20,7 @@ import AdminProfile from "./pages/admin/Profile";
 import AdminHomeSettings from "./pages/admin/HomeSettings";
 import NotFound from "./pages/NotFound";
 import AdminShortcutListener from "./components/AdminShortcutListener";
+// Background motion/overlays removed per request
 
 const queryClient = new QueryClient();
 

@@ -99,6 +99,22 @@ export const useGSAPScroll = () => {
         );
       }
 
+      // Headline word-by-word reveal
+      const headlineWords = document.querySelectorAll('.headline-reveal .headline-word');
+      if (headlineWords.length > 0) {
+        gsap.from(headlineWords, {
+          y: '1em',
+          opacity: 0,
+          duration: 0.6,
+          stagger: 0.06,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: '.headline-reveal',
+            start: 'top 85%'
+          },
+        });
+      }
+
       // Counter animation for metrics
       const counterElements = document.querySelectorAll('.counter');
       if (counterElements.length > 0) {

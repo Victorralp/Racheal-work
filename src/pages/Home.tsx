@@ -133,6 +133,29 @@ const Home = () => {
   const heroSubtitle = homeSettings.heroSubtitle?.trim();
   const heroBgUrl = profile?.heroBgUrl;
 
+  const handleHeroMouseMove: React.MouseEventHandler<HTMLElement> = (e) => {
+    const el = e.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    const nx = (e.clientX - rect.left) / rect.width - 0.5; // -0.5..0.5
+    const ny = (e.clientY - rect.top) / rect.height - 0.5;
+    const tx = `${nx * 24}px`;
+    const ty = `${ny * 16}px`;
+    const txStrong = `${nx * 36}px`;
+    const tyStrong = `${ny * 24}px`;
+    el.style.setProperty('--tx', tx);
+    el.style.setProperty('--ty', ty);
+    el.style.setProperty('--txStrong', txStrong);
+    el.style.setProperty('--tyStrong', tyStrong);
+  };
+
+  const handleHeroMouseLeave: React.MouseEventHandler<HTMLElement> = (e) => {
+    const el = e.currentTarget as HTMLElement;
+    el.style.setProperty('--tx', '0px');
+    el.style.setProperty('--ty', '0px');
+    el.style.setProperty('--txStrong', '0px');
+    el.style.setProperty('--tyStrong', '0px');
+  };
+
   return (
     <div ref={scrollRef} className="min-h-screen flex flex-col data-grid">
       <Navigation />
@@ -140,18 +163,20 @@ const Home = () => {
       <main className="flex-1">
         {/* Hero Section */}
         <section
-          className="hero-section container mx-auto px-4 py-20 md:py-32 relative overflow-hidden"
+          className="hero-section hero-parallax container mx-auto px-4 py-20 md:py-32 relative overflow-hidden"
           style={heroBgUrl ? {
             backgroundImage: `url(${heroBgUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
           } : {}}
+          onMouseMove={handleHeroMouseMove}
+          onMouseLeave={handleHeroMouseLeave}
         >
           {heroBgUrl && (
             <>
               {/* Blurred dark background for ambiance */}
-              <div className="absolute inset-0 z-0"
+              <div className="absolute inset-0 z-0 parallax-bg"
                 style={{
                   backgroundImage: `url(${heroBgUrl})`,
                   backgroundSize: 'cover',
@@ -166,38 +191,48 @@ const Home = () => {
                   background: 'radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,.82) 100%), linear-gradient(to bottom, rgba(0,0,0,0.66) 40%, rgba(0,0,0,0.88) 100%)'
                 }}
               />
+              {/* Grid sweep overlay */}
+              <div className="grid-sweep absolute inset-0 z-10 pointer-events-none" />
             </>
           )}
           {/* Main hero content (ensure z-20 or higher) */}
           <div className="relative z-20">
             <div className="max-w-6xl mx-auto flex flex-row-reverse items-center gap-10">
-              <div className="flex-shrink-0 flex flex-col items-center justify-center">
-                <div className={`relative group ${imgSize} rounded-full overflow-hidden`} style={{
-                  boxShadow: '0 0 48px 0px rgba(0,212,255,0.45), 0 4px 16px 0 rgba(0,0,0,0.6)',
-                  border: '3.5px solid #00d4ff',
-                  background: 'rgba(15,25,40,0.4)',
-                }}>
-                  <img
-                    src={headshotUrl}
-                    alt="Rachael Olarinoye"
-                    className="w-full h-full object-cover rounded-full"
-                    loading="lazy"
-                    style={{ backgroundColor: 'white' }}
-                  />
-                  {/* Animated Neon Pulse/Halo */}
-                  <div
-                    className="absolute inset-0 rounded-full pointer-events-none"
-                    style={{
-                      boxShadow: '0 0 48px 8px rgba(0,212,255,0.38)',
-                      animation: 'pulse 2.6s infinite cubic-bezier(.4,0,.6,1)',
-                      zIndex: 2,
-                      borderRadius: '9999px',
-                      border: '2px solid #00d4ff'
-                    }}
-                  />
+              <div className="flex-shrink-0 flex flex-col items-center justify-center parallax-layer parallax-layer-strong">
+                <div className={`relative group ${imgSize}`}>
+                  <div className="relative rounded-full overflow-hidden w-full h-full" style={{
+                    boxShadow: '0 0 48px 0px rgba(0,212,255,0.45), 0 4px 16px 0 rgba(0,0,0,0.6)',
+                    border: '3.5px solid #00d4ff',
+                    background: 'rgba(15,25,40,0.4)',
+                  }}>
+                    <img
+                      src={headshotUrl}
+                      alt="Rachael Olarinoye"
+                      className="w-full h-full object-cover rounded-full"
+                      loading="lazy"
+                      style={{ backgroundColor: 'white' }}
+                    />
+                    {/* Animated Neon Pulse/Halo */}
+                    <div
+                      className="absolute inset-0 rounded-full pointer-events-none"
+                      style={{
+                        boxShadow: '0 0 48px 8px rgba(0,212,255,0.38)',
+                        animation: 'pulse-glow 2.6s infinite cubic-bezier(.4,0,.6,1)',
+                        zIndex: 2,
+                        borderRadius: '9999px',
+                        border: '2px solid #00d4ff'
+                      }}
+                    />
+                  </div>
+                  {/* Orbiting data chips outside the avatar */}
+                  <div className="orbit-ring">
+                    <div className="orbit-chip orbit-chip-0"><span>{heroStats[0]?.label ?? 'SQL'}</span></div>
+                    <div className="orbit-chip orbit-chip-1"><span>{heroStats[1]?.label ?? 'Forecasting'}</span></div>
+                    <div className="orbit-chip orbit-chip-2"><span>{heroStats[2]?.label ?? 'Dashboards'}</span></div>
+                  </div>
                 </div>
               </div>
-              <div className="flex-1 text-center md:text-left space-y-6 scroll-reveal animate-fade-in-left">
+              <div className="parallax-layer flex-1 text-center md:text-left space-y-6 scroll-reveal animate-fade-in-left">
                 <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                   <Badge className="inline-flex neon-glow" variant="secondary">
                   {homeSettings.heroBadge}
@@ -205,10 +240,11 @@ const Home = () => {
                 </div>
                 
                 <h1 
-                  className="text-5xl md:text-7xl font-bold leading-tight bg-gradient-to-r from-primary via-cyan-400 to-primary/60 bg-clip-text text-transparent animate-fade-in-up"
-                  style={{ animationDelay: '0.4s' }}
+                  className="headline-reveal text-5xl md:text-7xl font-bold leading-tight"
                 >
-                  {homeSettings.heroTitle}
+                  {(homeSettings.heroTitle || '').split(/\s+/).map((word, i) => (
+                    <span key={i} className="headline-word inline-block mr-2 animated-gradient-text bg-gradient-to-r from-primary via-cyan-400 to-primary/60 bg-clip-text text-transparent">{word}</span>
+                  ))}
                 </h1>
                 
                 <p 
@@ -235,7 +271,7 @@ const Home = () => {
                 >
                   {renderButton(
                     homeSettings.primaryCtaLink || "/interactive",
-                    <span className="flex items-center gap-2">
+                    <span className="btn-shine flex items-center gap-2">
                       {homeSettings.primaryCtaLabel}
                       <ArrowRight className="w-4 h-4" />
                     </span>,
@@ -243,7 +279,7 @@ const Home = () => {
                   )}
                   {renderButton(
                     homeSettings.secondaryCtaLink || "/contact",
-                    homeSettings.secondaryCtaLabel,
+                    <span className="btn-shine">{homeSettings.secondaryCtaLabel}</span>,
                     { size: "lg", variant: "outline" },
                   )}
                 </div>
@@ -257,7 +293,16 @@ const Home = () => {
                     {heroStats.map((stat, index) => (
                       <div key={`${stat.label}-${index}`} className="text-center md:px-6">
                         <p className="text-3xl font-semibold text-primary">
-                          {stat.value}
+                          {(() => {
+                            const numeric = parseInt(String(stat.value).replace(/[^0-9]/g, '')) || 0;
+                            const suffix = String(stat.value).replace(/[0-9]/g, '');
+                            return (
+                              <>
+                                <span className="counter" data-end={numeric}>0</span>
+                                <span>{suffix}</span>
+                              </>
+                            );
+                          })()}
                         </p>
                         <p className="text-sm text-muted-foreground mt-1">
                           {stat.label}
@@ -272,12 +317,14 @@ const Home = () => {
                     <span className="uppercase tracking-[0.3em] text-xs text-muted-foreground/70">
                       {homeSettings.trustHeading}
                     </span>
-                    <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-foreground/70">
-                      {trustLogos.map((logo, index) => (
-                        <span key={`${logo}-${index}`} className="font-medium">
-                          {logo}
-                        </span>
-                      ))}
+                    <div className="logo-marquee">
+                      <div className="logo-track">
+                        {[...trustLogos, ...trustLogos].map((logo, index) => (
+                          <span key={`${logo}-${index}`} className="logo-item font-medium">
+                            {logo}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 
@@ -18,6 +18,25 @@ const cleanData = [
 export const DataCleaningDemo = () => {
   const [showClean, setShowClean] = useState(false);
   const data = showClean ? cleanData : rawData;
+
+  // Build a quick diff map by invoice id
+  const diffByInvoice: Record<string, Partial<Record<keyof typeof cleanData[number], boolean>>> = useMemo(() => {
+    const rawMap = new Map<string, typeof rawData[number]>();
+    for (const r of rawData) rawMap.set(r.invoice, r);
+    const map: Record<string, Partial<Record<keyof typeof cleanData[number], boolean>>> = {};
+    for (const c of cleanData) {
+      const r = rawMap.get(c.invoice);
+      if (!r) continue;
+      const changed: Partial<Record<keyof typeof c, boolean>> = {};
+      if (r.date !== c.date) changed.date = true;
+      if (r.sku?.toLowerCase().replace(/_/g, '-') !== c.sku) changed.sku = true;
+      if ((r.store || 'Unknown') !== c.store) changed.store = true;
+      const rAmt = String(r.amount).replace(/\$/g, '');
+      if (rAmt !== c.amount) changed.amount = true;
+      map[c.invoice] = changed;
+    }
+    return map;
+  }, []);
 
   return (
     <div className="bg-card border border-border rounded-xl p-6">
@@ -53,15 +72,18 @@ export const DataCleaningDemo = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, i) => (
-              <tr key={i} className="border-b border-border/50">
-                <td className="py-3 px-4 font-mono text-xs">{row.invoice}</td>
-                <td className="py-3 px-4 font-mono text-xs">{row.date}</td>
-                <td className="py-3 px-4 font-mono text-xs">{row.sku}</td>
-                <td className="py-3 px-4 font-mono text-xs">{row.store || <span className="text-destructive">empty</span>}</td>
-                <td className="py-3 px-4 font-mono text-xs">{row.amount}</td>
-              </tr>
-            ))}
+            {data.map((row, i) => {
+              const diff = showClean ? diffByInvoice[row.invoice] || {} : {};
+              return (
+                <tr key={i} className="border-b border-border/50 animate-fade-in-up" style={{ animationDelay: `${i * 0.03}s` }}>
+                  <td className="py-3 px-4 font-mono text-xs">{row.invoice}</td>
+                  <td className={`py-3 px-4 font-mono text-xs ${diff.date ? 'diff-flash' : ''}`}>{row.date}</td>
+                  <td className={`py-3 px-4 font-mono text-xs ${diff.sku ? 'diff-flash' : ''}`}>{row.sku}</td>
+                  <td className={`py-3 px-4 font-mono text-xs ${diff.store ? 'diff-flash' : ''}`}>{row.store || <span className="text-destructive">empty</span>}</td>
+                  <td className={`py-3 px-4 font-mono text-xs ${diff.amount ? 'diff-flash' : ''}`}>{row.amount}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

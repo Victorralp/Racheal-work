@@ -5,6 +5,8 @@ import { DataCleaningDemo } from "@/components/DataCleaningDemo";
 import { SQLShowcase } from "@/components/SQLShowcase";
 import { InsightCard } from "@/components/InsightCard";
 import { DashboardDemo } from "@/components/DashboardDemo";
+import { InteractiveTable } from "@/components/InteractiveTable";
+import { MiniDashboard } from "@/components/MiniDashboard";
 import { useDemoProjects, DemoProject } from "@/hooks/use-demo-projects";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -347,10 +349,22 @@ if not outliers.empty:
             <DashboardDemo />
           </section>
 
+          {/* Mini Dashboard Grid */}
+          <section className="mb-20 max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold mb-6">Mini Dashboard Grid</h2>
+            <MiniDashboard />
+          </section>
+
           {/* Data Cleaning Section */}
           <section className="mb-20 max-w-5xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">Data Cleaning Demo</h2>
             <DataCleaningDemo />
+          </section>
+
+          {/* Interactive Sales Table */}
+          <section className="mb-20 max-w-5xl mx-auto">
+            <h2 className="text-3xl font-bold mb-6">Interactive Sales Table</h2>
+            <InteractiveTable />
           </section>
 
           {/* SQL Showcase Section */}

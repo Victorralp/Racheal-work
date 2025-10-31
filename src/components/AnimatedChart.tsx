@@ -21,7 +21,8 @@ interface AnimatedChartProps {
 }
 
 const BarChart = ({ data }: { data: ChartData[] }) => {
-  const maxValue = Math.max(...data.map(d => d.value));
+  const maxValue = Math.max(0, ...data.map(d => d.value));
+  const denom = maxValue > 0 ? maxValue : 1;
   
   return (
     <div className="flex items-end justify-between h-48 gap-2">
@@ -34,7 +35,8 @@ const BarChart = ({ data }: { data: ChartData[] }) => {
           <div
             className="w-full rounded-t-sm relative overflow-hidden animate-scale-y"
             style={{ 
-              height: `${(item.value / maxValue) * 100}%`,
+              height: `${(item.value / denom) * 100}%`,
+              minHeight: `${item.value > 0 ? 4 : 0}px`,
               transformOrigin: 'bottom',
               background: `linear-gradient(to top, ${item.color}, ${item.color}80)`,
               animationDelay: `${index * 0.1 + 0.3}s`
