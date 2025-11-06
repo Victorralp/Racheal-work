@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -17,5 +17,15 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+// Enable offline persistence so reads can work from cache when offline
+// If multiple tabs are open, persistence can fail; ignore and continue.
+try {
+  enableIndexedDbPersistence(db).catch(() => {
+    // no-op: fall back to memory cache if persistence cannot be enabled
+  });
+} catch {
+  // SSR or unexpected environment; ignore
+}
 
 export default app;
