@@ -1,0 +1,58 @@
+[
+  {
+    "id": "underperforming",
+    "question": "Which branches underperformed this quarter?",
+    "sql": "SELECT \n  branch_name,\n  SUM(revenue) as actual_revenue,\n  target_revenue,\n  ROUND(100.0 * (SUM(revenue) - target_revenue) / target_revenue, 1) as variance_pct\nFROM sales\nJOIN branches ON sales.branch_id = branches.id\nWHERE quarter = 'Q1 2024'\nGROUP BY branch_name, target_revenue\nHAVING SUM(revenue) < target_revenue\nORDER BY variance_pct ASC;",
+    "result": [
+      {
+        "branch": "North Branch",
+        "actual": "$120,000",
+        "target": "$150,000",
+        "variance": "-20.0%"
+      },
+      {
+        "branch": "West Branch",
+        "actual": "$95,000",
+        "target": "$140,000",
+        "variance": "-32.1%"
+      }
+    ]
+  },
+  {
+    "id": "top-margin",
+    "question": "Top 5 products by gross margin?",
+    "sql": "SELECT \n  product_name,\n  product_sku,\n  ROUND(100.0 * (revenue - cost) / revenue, 1) as margin_pct,\n  COUNT(*) as units_sold\nFROM sales\nJOIN products ON sales.product_id = products.id\nWHERE sale_date >= '2024-01-01'\nGROUP BY product_name, product_sku\nORDER BY margin_pct DESC\nLIMIT 5;",
+    "result": [
+      {
+        "product": "Laptop Pro",
+        "sku": "SKU-244",
+        "margin": "37.5%",
+        "units": "248"
+      },
+      {
+        "product": "Wireless Mouse",
+        "sku": "SKU-105",
+        "margin": "34.2%",
+        "units": "892"
+      },
+      {
+        "product": "Monitor 27\"",
+        "sku": "SKU-389",
+        "margin": "31.8%",
+        "units": "156"
+      },
+      {
+        "product": "Keyboard Mech",
+        "sku": "SKU-512",
+        "margin": "29.4%",
+        "units": "445"
+      },
+      {
+        "product": "USB-C Hub",
+        "sku": "SKU-673",
+        "margin": "28.1%",
+        "units": "612"
+      }
+    ]
+  }
+]
