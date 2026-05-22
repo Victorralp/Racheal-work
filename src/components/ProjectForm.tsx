@@ -36,7 +36,7 @@ export const ProjectForm = ({ initialData, onSubmit, submitLabel }: ProjectFormP
       tools: [],
       coverImage: '',
       images: [],
-      published: false,
+      published: true,
     }
   );
   const [toolsInput, setToolsInput] = useState(initialData?.tools.join(', ') || '');
@@ -162,7 +162,7 @@ export const ProjectForm = ({ initialData, onSubmit, submitLabel }: ProjectFormP
           htmlFor="published"
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
-          Publish immediately
+          Show on public projects page
         </Label>
       </div>
 
