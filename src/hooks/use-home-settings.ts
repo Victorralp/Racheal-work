@@ -8,7 +8,6 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-const HOME_SETTINGS_DOC = doc(db, "settings", "home");
 const HOME_SETTINGS_QUERY_KEY = ["home-settings"];
 
 export interface HeroStat {
@@ -80,7 +79,7 @@ export interface HomeSettings {
 export interface UpdateHomeSettingsInput extends HomeSettings {}
 
 const DEFAULT_HOME_SETTINGS: HomeSettings = {
-  heroBadge: "Data Analyst • Business Intelligence • Automation",
+  heroBadge: "Data Analyst â€¢ Business Intelligence â€¢ Automation",
   heroTitle: "I turn raw data into decisions.",
   heroHighlight: "Rachael Olarinoye",
   heroSubtitle:
@@ -139,7 +138,7 @@ const DEFAULT_HOME_SETTINGS: HomeSettings = {
       icon: "Database",
       title: "Data Engineering",
       description:
-        "Build pipelines that collect and organize data automatically—no more manual exports eating up your team's time",
+        "Build pipelines that collect and organize data automaticallyâ€”no more manual exports eating up your team's time",
     },
     {
       icon: "BarChart3",
@@ -163,7 +162,7 @@ const DEFAULT_HOME_SETTINGS: HomeSettings = {
       icon: "TrendingUp",
       title: "Business Intelligence",
       description:
-        "Get clear recommendations backed by data—not guesswork. Know exactly what to do next to increase revenue",
+        "Get clear recommendations backed by dataâ€”not guesswork. Know exactly what to do next to increase revenue",
     },
     {
       icon: "Sparkles",
@@ -211,7 +210,7 @@ const DEFAULT_HOME_SETTINGS: HomeSettings = {
   selectedWorkCtaLink: "/projects",
   ctaHeadline: "Your competitors are using their data better than you.",
   ctaDescription:
-    "Let's fix that. I turn data into revenue, cut operational waste, and give you the insights that actually move your business forward. Fast response guaranteed—because time is money.",
+    "Let's fix that. I turn data into revenue, cut operational waste, and give you the insights that actually move your business forward. Fast response guaranteedâ€”because time is money.",
   ctaButtonLabel: "Let's Talk Numbers",
   ctaButtonLink: "/contact",
 };
@@ -222,7 +221,7 @@ const sanitizeArray = <T,>(value: unknown, fallback: T[]): T[] => {
 };
 
 const fetchHomeSettings = async (): Promise<HomeSettings> => {
-  const snapshot = await getDoc(HOME_SETTINGS_DOC);
+  const snapshot = await getDoc(doc(db, "settings", "home"));
 
   if (!snapshot.exists()) {
     return DEFAULT_HOME_SETTINGS;
@@ -376,7 +375,7 @@ const saveHomeSettings = async (
   payload: UpdateHomeSettingsInput,
 ): Promise<void> => {
   await setDoc(
-    HOME_SETTINGS_DOC,
+    doc(db, "settings", "home"),
     {
       ...payload,
       updatedAt: serverTimestamp(),
