@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, Timestamp, where } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { db } from "@/lib/firebase";
 import { Navigation } from "@/components/Navigation";
@@ -23,16 +23,33 @@ const Projects = () => {
     const q = query(
       collection(db, "projects"),
       where("published", "==", true),
-      orderBy("createdAt", "desc"),
     );
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const projectsData = snapshot.docs.map((docSnapshot) => ({
-          id: docSnapshot.id,
-          ...docSnapshot.data(),
-        })) as Project[];
+        const projectsData = snapshot.docs
+          .map((docSnapshot) => ({
+            id: docSnapshot.id,
+            ...docSnapshot.data(),
+          }))
+          .sort((a, b) => {
+            const getCreatedTime = (value: unknown) => {
+              if (value instanceof Timestamp) return value.toMillis();
+              if (value instanceof Date) return value.getTime();
+              if (
+                value &&
+                typeof value === "object" &&
+                "toDate" in value &&
+                typeof value.toDate === "function"
+              ) {
+                return value.toDate().getTime();
+              }
+              return 0;
+            };
+
+            return getCreatedTime(b.createdAt) - getCreatedTime(a.createdAt);
+          }) as Project[];
 
         setProjects(projectsData);
         setLoading(false);
