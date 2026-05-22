@@ -1,4 +1,6 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { collection, onSnapshot, query, Timestamp, where } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Navigation } from "@/components/Navigation";
@@ -7,7 +9,8 @@ import { BackgroundPaths } from "@/components/ui/background-paths";
 import { CardStack, CardStackItem } from "@/components/ui/card-stack";
 import { SkillsCarousel } from "@/components/ui/logo-carousel";
 import { TestimonialSection } from "@/components/ui/testimonial-cards";
-import { mockProjects } from "@/data/mockProjects";
+import { mockProjects, Project } from "@/data/mockProjects";
+import { db } from "@/lib/firebase";
 import { useSiteProfile } from "@/hooks/use-site-profile";
 import {
   ArrowRight,
@@ -18,19 +21,72 @@ import {
 } from "lucide-react";
 
 const Home = () => {
-  const featuredProjects = mockProjects.filter((p) => p.published).slice(0, 5);
+  const [projects, setProjects] = useState<Project[]>([]);
   const { data: profile } = useSiteProfile();
   const headshotUrl = profile?.headshotUrl?.trim() || "";
 
-  // Convert projects to CardStack format
-  const projectCards: CardStackItem[] = featuredProjects.map((p) => ({
-    id: p.id,
-    title: p.title,
-    description: p.summary,
-    imageSrc: p.coverImage || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600",
-    href: `/projects/${p.id}`,
-    tag: p.tools[0] || "Analytics",
-  }));
+  useEffect(() => {
+    const publishedProjectsQuery = query(
+      collection(db, "projects"),
+      where("published", "==", true),
+    );
+
+    const unsubscribe = onSnapshot(
+      publishedProjectsQuery,
+      (snapshot) => {
+        const projectsData = snapshot.docs
+          .map((docSnapshot) => ({
+            id: docSnapshot.id,
+            ...docSnapshot.data(),
+          }))
+          .sort((a, b) => {
+            const getCreatedTime = (value: unknown) => {
+              if (value instanceof Timestamp) return value.toMillis();
+              if (value instanceof Date) return value.getTime();
+              if (
+                value &&
+                typeof value === "object" &&
+                "toDate" in value &&
+                typeof value.toDate === "function"
+              ) {
+                return value.toDate().getTime();
+              }
+              return 0;
+            };
+
+            return getCreatedTime(b.createdAt) - getCreatedTime(a.createdAt);
+          }) as Project[];
+
+        setProjects(projectsData);
+      },
+      (error) => {
+        console.error("Error fetching featured projects:", error);
+      },
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  const featuredProjects = useMemo(() => {
+    const publishedProjects = projects.length
+      ? projects
+      : mockProjects.filter((p) => p.published);
+
+    return publishedProjects.slice(0, 5);
+  }, [projects]);
+
+  const projectCards: CardStackItem[] = useMemo(
+    () =>
+      featuredProjects.map((p) => ({
+        id: p.id,
+        title: p.title,
+        description: p.summary,
+        imageSrc: p.coverImage || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600",
+        href: `/projects/${p.id}`,
+        tag: p.tools[0] || "Analytics",
+      })),
+    [featuredProjects],
+  );
 
   return (
     <BackgroundPaths>
