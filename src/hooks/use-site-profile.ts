@@ -8,7 +8,6 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-const PROFILE_DOC_REF = doc(db, "settings", "profile");
 const PROFILE_QUERY_KEY = ["site-profile"];
 
 export interface SiteProfile {
@@ -49,7 +48,7 @@ const LOCAL_CACHE_KEY = 'site-profile-cache';
 
 const fetchSiteProfile = async (): Promise<SiteProfile> => {
   try {
-    const snapshot = await getDoc(PROFILE_DOC_REF);
+    const snapshot = await getDoc(doc(db, "settings", "profile"));
     if (!snapshot.exists()) {
       // If no remote doc, try local cache, then default
       try {
@@ -89,7 +88,7 @@ const fetchSiteProfile = async (): Promise<SiteProfile> => {
 const saveSiteProfile = async (profile: UpdateSiteProfileInput): Promise<void> => {
   // Always attempt to write remotely
   await setDoc(
-    PROFILE_DOC_REF,
+    doc(db, "settings", "profile"),
     {
       ...profile,
       updatedAt: serverTimestamp(),
